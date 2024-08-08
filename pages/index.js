@@ -2,14 +2,16 @@ import { useEffect, useState } from 'react';
 
 export default function Home() {
   const [users, setUsers] = useState([]);
+  const [filteredUsers, setFilteredUsers] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [searchTerm, setSearchTerm] = useState('');
 
   useEffect(() => {
     fetch('/api/generateUser')
       .then(response => response.json())
       .then(data => {
-        console.log('Usuarios recibidos:', data); // Verifica los datos recibidos
         setUsers(data);
+        setFilteredUsers(data);
         setLoading(false);
       })
       .catch(error => {
@@ -17,45 +19,52 @@ export default function Home() {
         setLoading(false);
       });
   }, []);
+
+  const handleSearch = (event) => {
+    const value = event.target.value.toLowerCase();
+    setSearchTerm(value);
+
+    const filtered = users.filter(user => 
+      user.name.toLowerCase().includes(value)
+    );
+    setFilteredUsers(filtered);
+  };
   
   if (loading) {
     return <p className="text-center text-gray-500">Cargando...</p>;
   }
 
-  if (users.length === 0) {
+  if (filteredUsers.length === 0) {
     return <p className="text-center text-gray-500">No se encontraron usuarios</p>;
   }
 
   return (
-    <div className="min-h-screen bg-gray-100 py-10 flex flex-col items-center">
+    <div className="min-h-screen bg-gray-100 py-10">
       <h1 className="text-4xl font-bold text-center text-blue-600 mb-10">Lista de Usuarios</h1>
-      <div className="w-full max-w-5xl bg-white p-5 rounded-lg shadow-lg">
-        <table className="w-full table-auto border-collapse">
-          <thead className="bg-blue-500 text-white">
-            <tr>
-              <th className="px-4 py-3 text-center">Foto</th>
-              <th className="px-4 py-3 text-center">Genero</th>
-              <th className="px-4 py-3 text-center">Nombre</th>
-              <th className="px-4 py-3 text-center">Ubicación</th>
-              <th className="px-4 py-3 text-center">Correo Electrónico</th>
-              <th className="px-4 py-3 text-center">Fecha de Nacimiento</th>
-            </tr>
-          </thead>
-          <tbody>
-            {users.map((user, index) => (
-              <tr key={index} className="odd:bg-gray-50 even:bg-white border-b">
-                <td className="px-4 py-3">
-                  <img src={user.picture} alt={user.name} className="w-16 h-16 rounded-full" />
-                </td>
-                <td className="px-4 py-3 text-gray-800 text-center">{user.gender}</td>
-                <td className="px-4 py-3 text-gray-800 text-center">{user.name}</td>
-                <td className="px-4 py-3 text-gray-800 text-center">{user.location}</td>
-                <td className="px-4 py-3 text-gray-800 text-center">{user.email}</td>
-                <td className="px-4 py-3 text-gray-800 text-center">{new Date(user.dob).toLocaleDateString()}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+      <div className="max-w-md mx-auto mb-6">
+        <input
+          type="text"
+          placeholder="Buscar por nombre..."
+          value={searchTerm}
+          onChange={handleSearch}
+          className="w-full p-3 border border-gray-300 rounded-lg shadow-sm"
+        />
+      </div>
+      <div className="grid gap-6 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 max-w-7xl mx-auto px-4">
+        {filteredUsers.map((user, index) => (
+          <div key={index} className="bg-white p-6 rounded-lg shadow-lg">
+            <div className="flex items-center justify-center">
+              <img src={user.picture} alt={user.name} className="w-24 h-24 rounded-full border-4 border-blue-500" />
+            </div>
+            <div className="mt-4 text-center">
+              <h2 className="text-xl font-semibold text-gray-800">{user.name}</h2>
+              <p className="text-gray-600">{user.gender}</p>
+              <p className="text-gray-600">{user.location}</p>
+              <p className="text-gray-600 mt-2">{user.email}</p>
+              <p className="text-gray-600 mt-2">Fecha de Nacimiento: {new Date(user.dob).toLocaleDateString()}</p>
+            </div>
+          </div>
+        ))}
       </div>
     </div>
   );
