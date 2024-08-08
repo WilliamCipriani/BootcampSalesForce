@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { CiLocationOn } from "react-icons/ci";
 
 export default function Home() {
   const [users, setUsers] = useState([]);
@@ -40,7 +41,7 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-gray-100 py-10">
-      <h1 className="text-4xl font-bold text-center text-blue-600 mb-10">Lista de Usuarios</h1>
+      <h1 className="text-4xl font-bold text-center text-gray-600 mb-10">Lista de Usuarios</h1>
       <div className="max-w-md mx-auto mb-6">
         <input
           type="text"
@@ -54,12 +55,12 @@ export default function Home() {
         {filteredUsers.map((user, index) => (
           <div key={index} className="bg-white p-6 rounded-lg shadow-lg">
             <div className="flex items-center justify-center">
-              <img src={user.picture} alt={user.name} className="w-24 h-24 rounded-full border-4 border-blue-500" />
+              <img src={user.picture} alt={user.name} className="w-24 h-24 rounded-full border-4 border-gray-500" />
             </div>
             <div className="mt-4 text-center">
               <h2 className="text-xl font-semibold text-gray-800">{user.name}</h2>
               <p className="text-gray-600">{user.gender}</p>
-              <p className="text-gray-600">{user.location}</p>
+              <p className="text-gray-600 flex justify-center"><CiLocationOn className='mt-1'/> {user.location}</p>
               <p className="text-gray-600 mt-2">{user.email}</p>
               <p className="text-gray-600 mt-2">Fecha de Nacimiento: {new Date(user.dob).toLocaleDateString()}</p>
             </div>
